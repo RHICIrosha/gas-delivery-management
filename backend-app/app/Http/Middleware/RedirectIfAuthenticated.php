@@ -19,12 +19,21 @@ class RedirectIfAuthenticated
     {
         $guards = empty($guards) ? [null] : $guards;
 
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+        if (auth()->check()) {
+            if (auth()->user()->user_type == 'admin') {
+                return redirect('admin/dashboard');
             }
+            if (auth()->user()->user_type == 'customer') {
+                return redirect('customer/dashboard');  // Customer home page
+            }
+            if (auth()->user()->user_type == 'outlet_manager') {
+                return redirect('outlet/dashboard');  // Employee dashboard
+            }
+            if (auth()->user()->user_type == 'business') {
+                return redirect('business/dashboard');  // Employee dashboard
+            }
+            return redirect('/home');
         }
-
         return $next($request);
     }
 }
